@@ -43,7 +43,7 @@ func mongoConnection() *mongo.Client {
 		panic(err)
 	}
 	fmt.Println("Connected to MongoDB!")
-	return client // ✅ Now it returns a value
+	return client
 }
 
 func main() {
@@ -53,9 +53,12 @@ func main() {
 	collection := mongoClient.Database(os.Getenv("MONGO_DBNAME")).Collection(os.Getenv("MONGO_COLLECTION_NAME"))
 
 	userRepo := repository.NewUserRepo(collection)
-
+	authRepo := repository.NewAuthRepo(collection)
 	userService := services.NewUserService(userRepo)
 	userHandler := handlers.NewUserHandler(userService)
+
+	authService := services.NewAuthService(authRepo, userRepo)
+	authHandler := handlers.NewAuthHandler(authService)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -71,8 +74,11 @@ func main() {
 		subRouter.Put("/users/{id}", userHandler.UpdateUserAgeByID)
 		subRouter.Delete("/users", userHandler.DeleteAllUsers)
 		subRouter.Delete("/users/{id}", userHandler.DeleteUserByID)
+		subRouter.Post("/register", authHandler.Register)
+		subRouter.Post("/login", authHandler.Login)
 
 	})
+
 	fmt.Println("Server started on port :4444")
 	http.ListenAndServe(":4444", r)
 }
