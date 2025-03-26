@@ -63,7 +63,7 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Route("/api/v1", func(subRouter chi.Router) {
+	r.Route("/api", func(subRouter chi.Router) {
 		subRouter.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(" server is healthy"))
 

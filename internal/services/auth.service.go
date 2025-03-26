@@ -3,13 +3,11 @@ package services
 import (
 	"errors"
 	"fmt"
-	"os"
-	"time"
 
 	"github.com/aakritigkmit/my-go-crud/dto"
+	"github.com/aakritigkmit/my-go-crud/internal/middleware"
 	"github.com/aakritigkmit/my-go-crud/internal/model"
 	"github.com/aakritigkmit/my-go-crud/internal/repository"
-	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -66,33 +64,10 @@ func (s *AuthService) Login(email, password string) (string, error) {
 	}
 
 	// Generate JWT token
-	tokenString, err := generateJWT(user.ID.Hex(), user.Email)
+	tokenString, err := middleware.GenerateJWT(user.ID.Hex(), user.Email)
 	if err != nil {
 		fmt.Println("Error generating JWT:", err) // Print error
 		return "", errors.New("failed to generate token")
-	}
-
-	return tokenString, nil
-}
-
-func generateJWT(userID string, email string) (string, error) {
-	secret := os.Getenv("JWT_SECRET")
-	if secret == "" {
-		fmt.Println("JWT_SECRET is not set") // Print error
-		return "", fmt.Errorf("JWT_SECRET is not set")
-	}
-
-	claims := jwt.MapClaims{
-		"user_id": userID,
-		"email":   email,
-		"exp":     time.Now().Add(time.Hour * 24).Unix(), // Token expires in 24 hours
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(secret))
-	if err != nil {
-		fmt.Println("Error signing JWT token:", err) // Print error
-		return "", err
 	}
 
 	return tokenString, nil
