@@ -58,7 +58,7 @@ func (h *UserHandler) GetUserByID(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]string{"error": "User not found"})
 		return
 	}
-
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(user)
 }
 func (h *UserHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
@@ -69,7 +69,7 @@ func (h *UserHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]string{"error": "Error fetching users"})
 		return
 	}
-
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(users)
 }
 func (h *UserHandler) UpdateUserAgeByID(w http.ResponseWriter, r *http.Request) {
@@ -97,7 +97,7 @@ func (h *UserHandler) UpdateUserAgeByID(w http.ResponseWriter, r *http.Request) 
 		json.NewEncoder(w).Encode(map[string]string{"error": "Error updating user"})
 		return
 	}
-
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"message": "User age updated successfully"})
 
 }
@@ -117,7 +117,7 @@ func (h *UserHandler) DeleteUserByID(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]string{"error": "Error deleting user"})
 		return
 	}
-
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"message": "User deleted successfully"})
 }
 func (h *UserHandler) DeleteAllUsers(w http.ResponseWriter, r *http.Request) {
@@ -129,5 +129,6 @@ func (h *UserHandler) DeleteAllUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"message": "All users deleted successfully"})
 }

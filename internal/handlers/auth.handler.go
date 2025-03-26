@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/aakritigkmit/my-go-crud/dto"
+	"github.com/aakritigkmit/my-go-crud/internal/helpers"
 	"github.com/aakritigkmit/my-go-crud/internal/services"
 )
 
@@ -22,36 +23,32 @@ func NewAuthHandler(services *services.AuthService) *AuthHandler {
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var userReq dto.UserRequest
 	if err := json.NewDecoder(r.Body).Decode(&userReq); err != nil {
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		helpers.SendErrorResponse(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 
 	err := h.Service.RegisterUser(userReq)
 	if err != nil {
 		fmt.Println("Error creating user:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Error creating user"})
+		helpers.SendErrorResponse(w, http.StatusInternalServerError, "Error creating user")
 		return
 	}
+	helpers.SendSuccessResponse(w, http.StatusCreated, "User registered successfully", nil)
 
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{"message": "User registered successfully"})
 }
 
 // // Login an existing user
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var credentials dto.UserRequest
 	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		helpers.SendErrorResponse(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 
 	token, err := h.Service.Login(credentials.Email, credentials.Password)
 	if err != nil {
-		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+		helpers.SendErrorResponse(w, http.StatusUnauthorized, "Invalid credentials")
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"token": token})
+	helpers.SendSuccessResponse(w, http.StatusOK, "Login successful", map[string]string{"token": token})
 }
