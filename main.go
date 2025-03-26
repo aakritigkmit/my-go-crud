@@ -9,6 +9,7 @@ import (
 
 	"github.com/aakritigkmit/my-go-crud/internal/handlers"
 	"github.com/aakritigkmit/my-go-crud/internal/repository"
+	"github.com/aakritigkmit/my-go-crud/internal/routes"
 	"github.com/aakritigkmit/my-go-crud/internal/services"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -68,14 +69,8 @@ func main() {
 
 		})
 
-		subRouter.Post("/users", userHandler.CreateUser)
-		subRouter.Get("/users/{id}", userHandler.GetUserByID)
-		subRouter.Get("/users", userHandler.GetAllUsers)
-		subRouter.Put("/users/{id}", userHandler.UpdateUserAgeByID)
-		subRouter.Delete("/users", userHandler.DeleteAllUsers)
-		subRouter.Delete("/users/{id}", userHandler.DeleteUserByID)
-		subRouter.Post("/register", authHandler.Register)
-		subRouter.Post("/login", authHandler.Login)
+		subRouter.Mount("/users", routes.UserRoutes(userHandler))
+		subRouter.Mount("/auth", routes.AuthRoutes(authHandler))
 
 	})
 
